@@ -42,7 +42,7 @@ pipeline {
         }
 
         failure {
-            emailext(
+            emailext( 
                 subject: "Jenkins BUILD FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                     Bonjour,
