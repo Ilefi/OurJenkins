@@ -46,7 +46,7 @@ pipeline {
             sh 'mvn sonar:sonar -Dsonar.projectKey=jenkins-arwa -Dsonar.projectName="Projet Arwa"'
         }  
     }
-} **************** */
+}  */
 
         stage('Build Package') {
             steps {
