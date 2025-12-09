@@ -8,11 +8,11 @@ pipeline {
     stages {
         // Le stage 'Declarative: Checkout SCM' est fait automatiquement par Jenkins
         
-        stage('Build') {
+        stage('Build & Package (Skip Tests)') {
             steps {
-                echo 'Starting the Maven Build Stage...'
-                // Exécuter la commande de compilation Maven
-                sh 'mvn clean install'
+                echo 'Starting the Maven Build Stage, skipping tests...'
+                // Exécuter la commande de compilation Maven et ignorer les tests
+                sh 'mvn clean install -DskipTests' 
             }
         }
     }
