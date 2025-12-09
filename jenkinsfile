@@ -1,72 +1,19 @@
 pipeline {
-    agent any
+    agent any 
 
     stages {
-
-        stage('commit') {
+        stage('Checkout Code') {
             steps {
-                // Récupération du code depuis GitHub
-                checkout scm
-                sh 'echo "Code téléchargé depuis GitHub..."'
-                sh 'ls -la'
+                // Cette étape permet à Jenkins de récupérer le code du dépôt Git
+                git url: 'VOTRE_URL_DE_DEPOT_GIT',
+                    branch: 'master' // ou la branche que vous utilisez
             }
         }
-
-        stage('build') {
+        stage('Build') {
             steps {
-                // Compilation du projet Java avec Maven
-                sh "mvn clean package -DskipTests"
+                echo 'Starting the Build Stage...'
+                // Ajoutez ici vos commandes de compilation (ex: sh 'mvn clean install')
             }
         }
     }
-
-    post {
-        success {
-            emailext(
-                subject: "Jenkins BUILD SUCCESS - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    Bonjour,
-
-                    Le build du projet s'est déroulé avec succès.
-
-                    Détails :
-                    - Job : ${env.JOB_NAME}
-                    - Build : #${env.BUILD_NUMBER}
-                    - URL : ${env.BUILD_URL}
-
-                    Cordialement,
-                    Jenkins CI
-                """,
-                to: "ilef.bt1@gmail.com"
-            )
-        }
-
-        failure {
-            emailext( 
-                subject: "Jenkins BUILD FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    Bonjour,
-
-                    Le build du projet a échoué.
-
-                    Détails :
-                    - Job : ${env.JOB_NAME}
-                    - Build : #${env.BUILD_NUMBER}
-                    - URL : ${env.BUILD_URL}
-
-                    Veuillez consulter les logs Jenkins pour identifier l'erreur.
-
-                    Cordialement,
-                    Jenkins CI
-                """,
-                to: "ilef.bt1@gmail.com"
-            )
-
-
-}
-}
-
-
-
-
 }
