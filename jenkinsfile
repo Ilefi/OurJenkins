@@ -1,8 +1,6 @@
 pipeline {
     agent any 
     tools {
-        // Le nom 'M2_HOME' doit correspondre exactement au nom que vous avez donné 
-        // à votre installation Maven dans 'Gérer Jenkins -> Outils'.
         maven 'M2_HOME' 
     }
     stages {
