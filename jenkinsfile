@@ -4,15 +4,15 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Cette étape permet à Jenkins de récupérer le code du dépôt Git
-                git url: 'VOTRE_URL_DE_DEPOT_GIT',
-                    branch: 'master' // ou la branche que vous utilisez
+                git url: 'https://github.com/Ilefi/OurJenkins.git',
+                    branch: 'main' // J'ai utilisé 'main' car le log montre la vérification de 'main'
             }
         }
         stage('Build') {
             steps {
                 echo 'Starting the Build Stage...'
-                // Ajoutez ici vos commandes de compilation (ex: sh 'mvn clean install')
+                // Ceci va utiliser l'outil Maven configuré dans Jenkins
+                sh 'mvn clean install'
             }
         }
     }
