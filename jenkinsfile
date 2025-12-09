@@ -11,7 +11,6 @@ pipeline {
         stage('Build & Package (Skip Tests)') {
             steps {
                 echo 'Starting the Maven Build Stage, skipping tests...'
-                // Exécuter la commande de compilation Maven et ignorer les tests
                 sh 'mvn clean install -DskipTests' 
             }
         }
