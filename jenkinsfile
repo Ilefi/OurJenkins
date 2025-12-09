@@ -1,17 +1,17 @@
 pipeline {
     agent any 
-
+    tools {
+        // Le nom 'M2_HOME' doit correspondre exactement au nom que vous avez donné 
+        // à votre installation Maven dans 'Gérer Jenkins -> Outils'.
+        maven 'M2_HOME' 
+    }
     stages {
-        stage('Checkout Code') {
-            steps {
-                git url: 'https://github.com/Ilefi/OurJenkins.git',
-                    branch: 'main' // J'ai utilisé 'main' car le log montre la vérification de 'main'
-            }
-        }
+        // Le stage 'Declarative: Checkout SCM' est fait automatiquement par Jenkins
+        
         stage('Build') {
             steps {
-                echo 'Starting the Build Stage...'
-                // Ceci va utiliser l'outil Maven configuré dans Jenkins
+                echo 'Starting the Maven Build Stage...'
+                // Exécuter la commande de compilation Maven
                 sh 'mvn clean install'
             }
         }
