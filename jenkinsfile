@@ -65,29 +65,16 @@ pipeline {
         stage('📊 Analyse SonarQube') {
             steps {
                 echo 'Analyse de la qualité du code avec SonarQube...'
-                script {
-                    // Vérifie que SonarQube est accessible
-                    sh '''
-                        echo "=== VÉRIFICATION SONARQUBE ==="
-                        echo "URL: ${SONAR_HOST_URL}"
-                        echo "Project Key: ${SONAR_PROJECT_KEY}"
-                        echo "Project Name: ${SONAR_PROJECT_NAME}"
-                        echo "============================="
-                    '''
-                    
-                    // Exécute l'analyse SonarQube
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        mvn sonar:sonar \
-                          -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                          -Dsonar.projectName="${SONAR_PROJECT_NAME}" \
-                          -Dsonar.sources=src/main/java \
-                          -Dsonar.tests=src/test/java \
-                          -Dsonar.java.binaries=target/classes \
-                          -Dsonar.junit.reportsPath=target/surefire-reports \
-                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                        """
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                    mvn sonar:sonar \
+                      -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                      -Dsonar.projectName="${SONAR_PROJECT_NAME}" \
+                      -Dsonar.sources=src/main/java \
+                      -Dsonar.tests=src/test/java \
+                      -Dsonar.java.binaries=target/classes \
+                      -Dsonar.junit.reportsPath=target/surefire-reports
+                    """
                 }
             }
         }
@@ -120,8 +107,13 @@ pipeline {
         stage('📄 Documentation Build') {
             steps {
                 echo 'Génération de la documentation...'
+                // Utilisation correcte du bloc script
                 script {
                     // Crée un fichier avec toutes les infos du build
+                    def commitHash = sh(script: 'git log -1 --pretty=format:"%H" 2>/dev/null || echo "Non disponible"', returnStdout: true).trim()
+                    def author = sh(script: 'git log -1 --pretty=format:"%an" 2>/dev/null || echo "Non disponible"', returnStdout: true).trim()
+                    def message = sh(script: 'git log -1 --pretty=format:"%s" 2>/dev/null || echo "Non disponible"', returnStdout: true).trim()
+                    
                     def buildInfo = """
                     ===================================
                     📋 BUILD INFORMATION - ${SONAR_PROJECT_NAME}
@@ -133,9 +125,9 @@ pipeline {
                     === GIT INFORMATION ===
                     Repository: ${env.GIT_URL ?: 'Non disponible'}
                     Branch: ${env.GIT_BRANCH ?: 'Non disponible'}
-                    Commit: ${sh(script: 'git log -1 --pretty=format:"%H" 2>/dev/null || echo "Non disponible"', returnStdout: true).trim()}
-                    Author: ${sh(script: 'git log -1 --pretty=format:"%an" 2>/dev/null || echo "Non disponible"', returnStdout: true).trim()}
-                    Message: ${sh(script: 'git log -1 --pretty=format:"%s" 2>/dev/null || echo "Non disponible"', returnStdout: true).trim()}
+                    Commit: ${commitHash}
+                    Author: ${author}
+                    Message: ${message}
                     
                     === SONARQUBE ===
                     Project Key: ${SONAR_PROJECT_KEY}
@@ -175,26 +167,26 @@ pipeline {
         
         success {
             echo '✅✅✅ PIPELINE RÉUSSIE ! ✅✅✅'
-            script {
-                // Lien vers SonarQube
-                def sonarUrl = "${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
-                echo "📊 Voir le rapport SonarQube: ${sonarUrl}"
-                
-                // Option: Envoyer un email
-                // mail to: 'ilef.bt1@gmail.com',
-                //     subject: "✅ SUCCÈS - ${SONAR_PROJECT_NAME} - Build #${env.BUILD_NUMBER}",
-                //     body: "La pipeline a réussi!\n\nVoir SonarQube: ${sonarUrl}\nVoir Jenkins: ${env.BUILD_URL}"
-            }
+            // Lien vers SonarQube
+            def sonarUrl = "${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
+            echo "📊 Voir le rapport SonarQube: ${sonarUrl}"
+            
+            // Option: Envoyer un email (décommente si besoin)
+            /*
+            mail to: 'ilef.bt1@gmail.com',
+                subject: "✅ SUCCÈS - ${SONAR_PROJECT_NAME} - Build #${env.BUILD_NUMBER}",
+                body: "La pipeline a réussi!\n\nVoir SonarQube: ${sonarUrl}\nVoir Jenkins: ${env.BUILD_URL}"
+            */
         }
         
         failure {
-            echo '❌❌❌ PIPELINE ÉCHOUÉE ! ❌❌'
-            script {
-                // Option: Envoyer un email d'erreur
-                // mail to: 'ilef.bt1@gmail.com',
-                //     subject: "❌ ÉCHEC - ${SONAR_PROJECT_NAME} - Build #${env.BUILD_NUMBER}",
-                //     body: "La pipeline a échoué!\n\nVoir les logs: ${env.BUILD_URL}/console"
-            }
+            echo '❌❌❌ PIPELINE ÉCHOUÉE ! ❌❌❌'
+            // Option: Envoyer un email d'erreur
+            /*
+            mail to: 'ilef.bt1@gmail.com',
+                subject: "❌ ÉCHEC - ${SONAR_PROJECT_NAME} - Build #${env.BUILD_NUMBER}",
+                body: "La pipeline a échoué!\n\nVoir les logs: ${env.BUILD_URL}/console"
+            */
         }
         
         changed {
