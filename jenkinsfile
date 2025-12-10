@@ -188,7 +188,7 @@ pipeline {
         }
         
         failure {
-            echo '❌❌❌ PIPELINE ÉCHOUÉE ! ❌❌❌'
+            echo '❌❌❌ PIPELINE ÉCHOUÉE ! ❌❌'
             script {
                 // Option: Envoyer un email d'erreur
                 // mail to: 'ilef.bt1@gmail.com',
