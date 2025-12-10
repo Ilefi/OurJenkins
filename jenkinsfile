@@ -84,7 +84,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar,github-info.txt', fingerprint: true
             archiveArtifacts 'github-info.txt'
             
-            // Nettoyage
+            // Nettoyagee
             sh 'mvn clean'
         }
         success {
